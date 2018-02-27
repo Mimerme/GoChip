@@ -4,8 +4,6 @@ import "fmt"
 
 //Stack grows down?
 
-var machine Chip8
-
 func InitializeVM() *Chip8 {
 	machine = Chip8{}
 	return &machine
