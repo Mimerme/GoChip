@@ -1,4 +1,4 @@
-package main
+package chip8_debugger
 
 import "github.com/marcusolsson/tui-go"
 import (

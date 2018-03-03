@@ -1,9 +1,13 @@
-package main
+package chip8
 
 import "fmt"
 import "os"
 
+var DEBUG bool
+
 func main() {
+	DEBUG = false
+
 	chipVM := InitializeVM()
 
 	fmt.Println("Chip 8 emu")
@@ -13,9 +17,10 @@ func main() {
 	}
 
 	if len(os.Args) == 3 {
-		if os.Args[3] == "d" {
+		if os.Args[2] == "d" {
 			fmt.Println("Running debugger")
 			InitDebugger(chipVM)
+			DEBUG = true
 		}
 	}
 

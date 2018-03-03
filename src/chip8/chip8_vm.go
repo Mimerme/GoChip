@@ -1,12 +1,12 @@
-package main
+package chip8
 
-const STACK_START uint16 = 0x0EA0
-const STACK_END uint16 = 0x0EFF
 const DISP_START uint16 = 0x0F00
 const DISP_END uint16 = 0x0FFF
 
 //Contains the machine specification structure
 type Chip8 struct {
+	stack [16]uint16
+
 	//Allocate the 4096 bytes of memory
 	//TODO: Implement invalid program memory access
 	//https://en.wikipedia.org/wiki/CHIP-8#Memory

@@ -1,4 +1,4 @@
-package main
+package chip8
 
 func bootstrap_program(opcodes []OpCode, machine *Chip8) {
 	for i := 0; i < len(opcodes); i++ {
