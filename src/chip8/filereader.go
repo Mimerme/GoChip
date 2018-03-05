@@ -9,7 +9,7 @@ type OpCode struct {
 
 //Opcodes are 2 bytes long
 
-func read_file(filepath string) []OpCode {
+func ReadFile(filepath string) []OpCode {
 	f, err := os.Open(filepath)
 	file_info, err := f.Stat()
 	total_opcodes := file_info.Size() / 2

@@ -1,14 +1,18 @@
-package chip8
+package main
 
-import "fmt"
-import "os"
+import (
+    "fmt"
+    "os"
+    "./chip8"
+    "./chip8_debugger"
+)
 
 var DEBUG bool
 
 func main() {
 	DEBUG = false
 
-	chipVM := InitializeVM()
+	chipVM := chip8.InitializeVM()
 
 	fmt.Println("Chip 8 emu")
 	if len(os.Args) < 2 {
@@ -19,15 +23,15 @@ func main() {
 	if len(os.Args) == 3 {
 		if os.Args[2] == "d" {
 			fmt.Println("Running debugger")
-			InitDebugger(chipVM)
+			go chip8_debugger.StartDebugger()
 			DEBUG = true
 		}
 	}
 
 	//Split the file into segments of 2 bytes
-	opcodes := read_file(os.Args[1])
+	opcodes := chip8.ReadFile(os.Args[1])
 	//Load program into memory
-	bootstrap_program(opcodes, chipVM)
+	chip8.BootstrapProgram(opcodes, chipVM)
 
-	begin_execution_loop()
+	chip8.BeginExecutionLoop()
 }

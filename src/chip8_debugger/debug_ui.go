@@ -1,9 +1,8 @@
 package chip8_debugger
 
 import "github.com/marcusolsson/tui-go"
-import "chip8"
 
-func start_debugger() {
+func StartDebugger() {
 
 	reg_label := tui.NewVBox(
 		tui.NewLabel("Registers"),
