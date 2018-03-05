@@ -42,8 +42,18 @@ func draw_registers(draw_pane *tui.Box, GPRs *[16]byte, I *uint16, PC *uint16, S
 		grid.SetCell(image.Point{X: 0, Y: i}, tui.NewLabel(fmt.Sprintf("V[%X]", i)))
 		//TODO: Implement reading the stack
 	}
+	pc_label := tui.NewLabel("0")
+
+	go func(label *tui.Label) {
+		for {
+			h := fmt.Sprintf("%x", PC)
+			pc_label.SetText(h)
+		}
+	}(pc_label)
+
 	grid.SetCell(image.Point{X: 2, Y: 0}, tui.NewLabel("I"))
 	grid.SetCell(image.Point{X: 2, Y: 1}, tui.NewLabel("PC"))
+	grid.SetCell(image.Point{X: 3, Y: 1}, pc_label)
 	grid.SetCell(image.Point{X: 2, Y: 2}, tui.NewLabel("SP"))
 
 	grid.SetSizePolicy(tui.Minimum, tui.Minimum)

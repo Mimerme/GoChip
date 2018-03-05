@@ -1,10 +1,10 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "./chip8"
-    "./chip8_debugger"
+	"./chip8"
+	"./chip8_debugger"
+	"fmt"
+	"os"
 )
 
 var DEBUG bool
@@ -14,16 +14,13 @@ func main() {
 
 	chipVM := chip8.InitializeVM()
 
-	fmt.Println("Chip 8 emu")
+	fmt.Println("Chip 8 VM Initialized")
 	if len(os.Args) < 2 {
 		fmt.Println("Plz specify program file")
 		return
 	}
-
 	if len(os.Args) == 3 {
 		if os.Args[2] == "d" {
-			fmt.Println("Running debugger")
-			go chip8_debugger.StartDebugger()
 			DEBUG = true
 		}
 	}
@@ -33,5 +30,10 @@ func main() {
 	//Load program into memory
 	chip8.BootstrapProgram(opcodes, chipVM)
 
-	chip8.BeginExecutionLoop()
+	if DEBUG {
+		go chip8.BeginExecutionLoop()
+		chip8_debugger.StartDebugger(chipVM)
+	} else {
+		chip8.BeginExecutionLoop()
+	}
 }
