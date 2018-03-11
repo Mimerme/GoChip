@@ -62,6 +62,8 @@ func BeginExecutionLoop(pause *chan struct{}, play *chan struct{}, step *chan st
 			select {
 			case <-(*play):
 				break
+			case <-(*step):
+				break
 			}
 		default:
 			break

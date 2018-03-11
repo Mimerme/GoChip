@@ -61,8 +61,10 @@ func StartDebugger(chip8VM *chip8.Chip8, DEBUG_PAUSE *bool, pause *chan struct{}
 
 	ui.SetKeybinding("D", func() {
 		//Run a step
-		(*step) <- struct{}{}
-
+		if *DEBUG_PAUSE {
+			status_bar.SetPermanentText("Stepped over instruction")
+			(*step) <- struct{}{}
+		}
 	})
 
 	if err := ui.Run(); err != nil {
