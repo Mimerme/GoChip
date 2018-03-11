@@ -32,14 +32,6 @@ func ReadFile(filepath string) []OpCode {
 		var opcode OpCode
 		opcode = OpCode{opcode_buffer[0], opcode_buffer[1]}
 		opcode_list[i] = opcode
-
-		//		//Load in the first byte, shift it over to the higher end
-		//		opcode = uint16(opcode_buffer[0]) << 8
-		//		//Or the last byte with the lower end
-		//		opcode = opcode | uint16(opcode_buffer[1])
-		//		opcode_list[i] = opcode
-		//		hex := fmt.Sprintf("%x", opcode)
-		//		fmt.Println("0x" + hex)
 	}
 	return opcode_list
 

@@ -1,10 +1,10 @@
-package chip8_debugger
+package debugger
 
 import "github.com/marcusolsson/tui-go"
 import "fmt"
 import "../chip8/"
 
-func StartDebugger(chip8VM *chip8.Chip8) {
+func StartDebugger(chip8VM *chip8.Chip8, DEBUG_PAUSE *bool, pause *chan struct{}, play *chan struct{}, step *chan struct{}) {
 	fmt.Println("Starting the debugger")
 
 	reg_label := tui.NewVBox(
@@ -18,7 +18,7 @@ func StartDebugger(chip8VM *chip8.Chip8) {
 	stack_label.SetSizePolicy(tui.Minimum, tui.Maximum)
 
 	footer := tui.NewVBox(
-		tui.NewLabel("<Tab> to cycle through panels"),
+		tui.NewLabel("<Tab> to cycle through panels. <P> to pause execution. <D> Execute instruction"),
 	)
 	footer.SetSizePolicy(tui.Minimum, tui.Maximum)
 
@@ -27,7 +27,7 @@ func StartDebugger(chip8VM *chip8.Chip8) {
 	footer_box := tui.NewVBox(footer)
 
 	status_bar := tui.NewStatusBar("Registers & Stack")
-	status_bar.SetPermanentText("Chip 8 Debugging Tools")
+	status_bar.SetPermanentText("Executing Program...")
 
 	main_panel := tui.NewVBox(
 		status_bar,
@@ -47,6 +47,23 @@ func StartDebugger(chip8VM *chip8.Chip8) {
 		panic(err)
 	}
 	ui.SetKeybinding("Esc", func() { ui.Quit() })
+
+	ui.SetKeybinding("P", func() {
+		*(DEBUG_PAUSE) = !(*(DEBUG_PAUSE))
+		if *DEBUG_PAUSE {
+			status_bar.SetPermanentText("Execution Paused")
+			(*pause) <- struct{}{}
+		} else {
+			status_bar.SetPermanentText("Executing Program...")
+			(*play) <- struct{}{}
+		}
+	})
+
+	ui.SetKeybinding("D", func() {
+		//Run a step
+		(*step) <- struct{}{}
+
+	})
 
 	if err := ui.Run(); err != nil {
 		panic(err)

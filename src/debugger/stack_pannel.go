@@ -1,4 +1,4 @@
-package chip8_debugger
+package debugger
 
 import "github.com/marcusolsson/tui-go"
 import (
@@ -42,20 +42,47 @@ func draw_registers(draw_pane *tui.Box, GPRs *[16]byte, I *uint16, PC *uint16, S
 		grid.SetCell(image.Point{X: 0, Y: i}, tui.NewLabel(fmt.Sprintf("V[%X]", i)))
 		//TODO: Implement reading the stack
 	}
-	pc_label := tui.NewLabel("0")
+	pc_label := tui.NewLabel("NoInit")
+	i_label := tui.NewLabel("NoInit")
+	sp_label := tui.NewLabel("NoInit")
 
-	go func(label *tui.Label) {
-		for {
-			h := fmt.Sprintf("%x", PC)
-			pc_label.SetText(h)
-		}
-	}(pc_label)
+	hook_update_label(pc_label, PC)
+	hook_update_label(i_label, I)
+	hook_update_label_8(sp_label, SP)
 
 	grid.SetCell(image.Point{X: 2, Y: 0}, tui.NewLabel("I"))
+	grid.SetCell(image.Point{X: 3, Y: 0}, i_label)
 	grid.SetCell(image.Point{X: 2, Y: 1}, tui.NewLabel("PC"))
 	grid.SetCell(image.Point{X: 3, Y: 1}, pc_label)
 	grid.SetCell(image.Point{X: 2, Y: 2}, tui.NewLabel("SP"))
+	grid.SetCell(image.Point{X: 3, Y: 2}, sp_label)
 
 	grid.SetSizePolicy(tui.Minimum, tui.Minimum)
 	draw_pane.Append(grid)
+}
+
+//Given a label set the value that it should watch
+func hook_update_label(label *tui.Label, val *uint16) {
+	go func() {
+		for {
+			label.SetText("0x" + to_hex_string(*val))
+		}
+	}()
+}
+
+func to_hex_string(val uint16) (hex_string string) {
+	return strconv.FormatUint((uint64)(val), 16)
+}
+
+//Same as funcs above just with 8 bit unsigned ints
+func hook_update_label_8(label *tui.Label, val *uint8) {
+	go func() {
+		for {
+			label.SetText("0x" + to_hex_string_8(*val))
+		}
+	}()
+}
+
+func to_hex_string_8(val uint8) (hex_string string) {
+	return strconv.FormatUint((uint64)(val), 8)
 }
