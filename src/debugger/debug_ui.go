@@ -4,7 +4,7 @@ import "github.com/marcusolsson/tui-go"
 import "fmt"
 import "../chip8/"
 
-func StartDebugger(chip8VM *chip8.Chip8, DEBUG_PAUSE *bool, pause *chan struct{}, play *chan struct{}, step *chan struct{}) {
+func StartDebugger(chip8VM *(chip8.Chip8), DEBUG_PAUSE *bool, pause *chan struct{}, play *chan struct{}, step *chan struct{}) {
 	fmt.Println("Starting the debugger")
 
 	reg_label := tui.NewVBox(
@@ -63,7 +63,7 @@ func StartDebugger(chip8VM *chip8.Chip8, DEBUG_PAUSE *bool, pause *chan struct{}
 		//Run a step
 		if *DEBUG_PAUSE {
 			status_bar.SetPermanentText("Stepped over instruction")
-			(*step) <- struct{}{}
+			(*chip8VM).ExecuteStep()
 		}
 	})
 

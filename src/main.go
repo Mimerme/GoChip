@@ -45,13 +45,13 @@ func main() {
 	//Creates an array of OpCodes. Each OpCode is 2 bytes.
 	opcodes := chip8.ReadFile(os.Args[1])
 	//Loads program into memory
-	chip8.BootstrapProgram(opcodes, chipVM)
+	chipVM.BootstrapProgram(opcodes)
 
 	//If the debugger is used then give the debugger UI the main thread and start the program on a seperate thread
 	if DEBUG {
-		go chip8.BeginExecutionLoop(&pause, &play, &step)
+		go chipVM.BeginExecutionLoop(&pause, &play, &step)
 		debugger.StartDebugger(chipVM, &DEBUG_PAUSE, &pause, &play, &step)
 	} else {
-		chip8.BeginExecutionLoop(&pause, &play, &step)
+		chipVM.BeginExecutionLoop(&pause, &play, &step)
 	}
 }

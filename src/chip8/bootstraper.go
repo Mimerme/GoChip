@@ -1,6 +1,6 @@
 package chip8
 
-func BootstrapProgram(opcodes []OpCode, machine *Chip8) {
+func (machine *Chip8) BootstrapProgram(opcodes []OpCode) {
 	for i := 0; i < len(opcodes); i++ {
 		//Load the code into memory
 		//Each instruction is 2 bytes
