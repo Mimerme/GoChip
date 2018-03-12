@@ -70,7 +70,6 @@ func (machine *Chip8) ExecuteStep() {
 	//ie. A return instruction changes the PC, but updating the PC after it offsets the PC incorrectly by 2
 	//TODO: Refine the PC handling
 	//TODO: Plz help idk what the cpu instruction cycle is
-
 	parse_opcode(machine.Memory[machine.PC], machine.Memory[machine.PC+1], machine)
 	machine.PC += 2
 }
