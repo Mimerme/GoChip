@@ -1,6 +1,7 @@
 package chip8
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -21,9 +22,10 @@ func (machine *Chip8) sub_ret() {
 		os.Exit(0)
 	}
 
-	return_pointer := machine.stack[machine.SP]
+	return_pointer := machine.Stack[machine.SP]
 
 	machine.PC = return_pointer
+	fmt.Println(machine.PC)
 }
 
 func (machine *Chip8) jump(address uint16) {
@@ -32,8 +34,7 @@ func (machine *Chip8) jump(address uint16) {
 
 func (machine *Chip8) call(address uint16) {
 	//fmt.Println("Call")
-
-	machine.stack[machine.SP] = machine.PC
+	machine.Stack[machine.SP] = machine.PC
 
 	machine.SP = machine.SP + 1
 	machine.PC = address
@@ -68,8 +69,8 @@ func (machine *Chip8) ExecuteStep() {
 	//Create a temp PC so that we can update the value after execution, but also accept PC changes from the operations
 	//ie. A return instruction changes the PC, but updating the PC after it offsets the PC incorrectly by 2
 	//TODO: Refine the PC handling
+	//TODO: Plz help idk what the cpu instruction cycle is
 
-	temp_pc := machine.PC
+	parse_opcode(machine.Memory[machine.PC], machine.Memory[machine.PC+1], machine)
 	machine.PC += 2
-	parse_opcode(machine.memory[temp_pc], machine.memory[temp_pc+1], machine)
 }

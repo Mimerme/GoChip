@@ -13,7 +13,7 @@ type Chip8 struct {
 	//Allocate the 4096 bytes of memory
 	//TODO: Implement invalid program memory access
 	//https://en.wikipedia.org/wiki/CHIP-8#Memory
-	memory [4096]byte
+	Memory [4096]byte
 
 	//Registers
 	//Register 15 (aka 16) is VF
@@ -24,5 +24,5 @@ type Chip8 struct {
 
 	//The stack has a max depth of 16
 	SP    byte
-	stack [16]uint16
+	Stack [16]uint16
 }

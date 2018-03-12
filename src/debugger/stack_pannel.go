@@ -27,7 +27,7 @@ func draw_stack(draw_pane *tui.Box, stack *[16]uint16) {
 	//Read values
 	for i := 0; i < 16; i++ {
 		grid.SetCell(image.Point{X: 0, Y: i + 1}, tui.NewLabel(strconv.Itoa(i)))
-		//TODO: Implement reading the stack
+		grid.SetCell(image.Point{X: 1, Y: i + 1}, tui.NewLabel(to_hex_string(stack[i])))
 	}
 
 	grid.SetSizePolicy(tui.Minimum, tui.Minimum)
@@ -41,6 +41,7 @@ func draw_registers(draw_pane *tui.Box, GPRs *[16]byte, I *uint16, PC *uint16, S
 	for i := 0; i < 16; i++ {
 		grid.SetCell(image.Point{X: 0, Y: i}, tui.NewLabel(fmt.Sprintf("V[%X]", i)))
 		//TODO: Implement reading the stack
+		grid.SetCell(image.Point{X: 1, Y: i}, tui.NewLabel(fmt.Sprintf(to_hex_string_8(GPRs[i]))))
 	}
 	pc_label := tui.NewLabel("NoInit")
 	i_label := tui.NewLabel("NoInit")

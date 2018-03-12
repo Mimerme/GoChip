@@ -39,7 +39,7 @@ func StartDebugger(chip8VM *(chip8.Chip8), DEBUG_PAUSE *bool, pause *chan struct
 	stack.SetBorder(true)
 
 	//Draw the stack
-	draw_stack(stack, nil)
+	draw_stack(stack, &chip8VM.Stack)
 	draw_registers(registers, &chip8VM.GPR, &chip8VM.I, &chip8VM.PC, &chip8VM.SP)
 
 	ui, err := tui.New(main_panel)

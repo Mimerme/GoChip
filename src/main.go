@@ -36,7 +36,7 @@ func main() {
 		fmt.Println("Plz specify program file")
 		return
 	}
-	if len(os.Args) == 3 {
+	if len(os.Args) >= 3 {
 		if os.Args[2] == "d" {
 			DEBUG = true
 		}
@@ -51,6 +51,7 @@ func main() {
 	if DEBUG {
 		go chipVM.BeginExecutionLoop(&pause, &play, &step)
 		debugger.StartDebugger(chipVM, &DEBUG_PAUSE, &pause, &play, &step)
+		//Start the debugger paused?
 	} else {
 		chipVM.BeginExecutionLoop(&pause, &play, &step)
 	}
