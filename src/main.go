@@ -3,9 +3,11 @@ package main
 import (
 	"./chip8"
 	"./debugger"
+	"./display"
 	"fmt"
 	"os"
 )
+import "github.com/faiface/pixel/pixelgl"
 
 //These variables are only used for the debugger
 var DEBUG bool
@@ -48,6 +50,7 @@ func main() {
 	chipVM.BootstrapProgram(opcodes)
 
 	//If the debugger is used then give the debugger UI the main thread and start the program on a seperate thread
+	pixelgl.Run(display.CreateWindow)
 	if DEBUG {
 		go chipVM.BeginExecutionLoop(&pause, &play, &step)
 		debugger.StartDebugger(chipVM, &DEBUG_PAUSE, &pause, &play, &step)

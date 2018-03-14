@@ -39,13 +39,13 @@ func (machine *Chip8) call(address uint16) {
 }
 
 func (machine *Chip8) skip_if_equal(register uint8, value uint8) {
-	if machine.GPRs[register] == value {
+	if machine.GPR[register] == value {
 		machine.PC += 4
 	}
 }
 
 func (machine *Chip8) skip_if_not_equal(register uint8, value uint8) {
-	if machine.GPRs[register] != value {
+	if machine.GPR[register] != value {
 		machine.PC += 4
 	}
 }
