@@ -8,10 +8,15 @@ func CreateWindow() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "GoChip [Chip-8 Emulator]",
 		Bounds: pixel.R(0, 0, 1024, 768),
+		VSync:  true,
 	}
-	_, err := pixelgl.NewWindow(cfg)
+	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
+	}
+
+	for !win.Closed() {
+		win.Update()
 	}
 }
 
