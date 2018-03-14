@@ -1,7 +1,6 @@
 package chip8
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -25,7 +24,6 @@ func (machine *Chip8) sub_ret() {
 	return_pointer := machine.Stack[machine.SP]
 
 	machine.PC = return_pointer
-	fmt.Println(machine.PC)
 }
 
 func (machine *Chip8) jump(address uint16) {
@@ -38,6 +36,18 @@ func (machine *Chip8) call(address uint16) {
 
 	machine.SP = machine.SP + 1
 	machine.PC = address
+}
+
+func (machine *Chip8) skip_if_equal(register uint8, value uint8) {
+	if machine.GPRs[register] == value {
+		machine.PC += 4
+	}
+}
+
+func (machine *Chip8) skip_if_not_equal(register uint8, value uint8) {
+	if machine.GPRs[register] != value {
+		machine.PC += 4
+	}
 }
 
 func (machine *Chip8) placeholder() {
@@ -71,5 +81,4 @@ func (machine *Chip8) ExecuteStep() {
 	//TODO: Refine the PC handling
 	//TODO: Plz help idk what the cpu instruction cycle is
 	parse_opcode(machine.Memory[machine.PC], machine.Memory[machine.PC+1], machine)
-	machine.PC += 2
 }

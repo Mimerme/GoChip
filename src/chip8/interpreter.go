@@ -20,9 +20,11 @@ func parse_opcode(high byte, low byte, machine *Chip8) {
 	opcode_nib_3 = (low & 0xF0) >> 4
 	opcode_nib_4 = (low & 0x0F)
 
+	//TODO Refine this parsing
 	if opcode_nib_1 == 0x0 {
 		if opcode_nib_4 == 0x0 {
 			machine.display_clear()
+			machine.PC += 2
 		} else {
 			machine.sub_ret()
 		}
