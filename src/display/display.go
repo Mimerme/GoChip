@@ -2,6 +2,7 @@
 package display
 
 import (
+	"fmt"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
@@ -9,9 +10,10 @@ import (
 )
 
 //Y value first then X
-var display [][]bool
+var Display [][]bool
 var imd *imdraw.IMDraw
-var win 
+var win *pixelgl.Window
+var Ready bool = false
 
 //64 X 32 PIXELS
 //THUS 8 X 4 BYTES
@@ -22,9 +24,9 @@ const CANVAS_HEIGHT = DISPLAY_HEIGHT * 8
 
 func CreateWindow() {
 	//Initalize a matrix representing the display
-	display = make([][]bool, DISPLAY_HEIGHT)
-	for i := range display {
-		display[i] = make([]bool, DISPLAY_WIDTH)
+	Display = make([][]bool, DISPLAY_HEIGHT)
+	for i := range Display {
+		Display[i] = make([]bool, DISPLAY_WIDTH)
 	}
 
 	cfg := pixelgl.WindowConfig{
@@ -37,8 +39,13 @@ func CreateWindow() {
 	if err != nil {
 		panic(err)
 	}
-	imd = imdraw.New(nil)
 
+	imd = imdraw.New(nil)
+	for !win.Closed() {
+		Render()
+	}
+
+	Ready = true
 }
 
 //From topleft
@@ -50,25 +57,24 @@ func push_square(imdraw *imdraw.IMDraw, x, y, width float64) {
 	imdraw.Polygon(0)
 }
 
-func render(imdraw *imdraw.IMDraw) {
-	for i := range display {
-		for k := range display[i] {
-			if display[i][k] {
-				push_square(imdraw, (float64(k * 8)), (float64(i * 8)), 8)
+func Render() {
+	for i := range Display {
+		for k := range Display[i] {
+			if Display[i][k] {
+				push_square(imd, (float64(k * 8)), (float64(i * 8)), 8)
 			}
 		}
 	}
 	win.Clear(colornames.Black)
-	render(imd)
 	imd.Draw(win)
 	win.Update()
 }
 
 //Set every bit to false
 func ClearScreen() {
-	for i := range display {
-		for k := range display[i] {
-			display[i][k] = false
+	for i := range Display {
+		for k := range Display[i] {
+			Display[i][k] = false
 		}
 	}
 }
@@ -76,7 +82,8 @@ func ClearScreen() {
 //X and Y are supplied as pixel locations
 //Returns true if the pixel was already enabled
 func Draw(x, y int) bool {
-	orig := display[y][x]
-	display[y][x] = true
+	fmt.Println(Display)
+	orig := Display[y][x]
+	Display[y][x] = true
 	return orig
 }
