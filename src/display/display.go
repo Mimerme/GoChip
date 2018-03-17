@@ -12,8 +12,6 @@ import (
 //Y value first then X
 var Display [][]bool
 var imd *imdraw.IMDraw
-var win *pixelgl.Window
-var Ready bool = false
 
 //64 X 32 PIXELS
 //THUS 8 X 4 BYTES
@@ -22,7 +20,7 @@ const DISPLAY_HEIGHT = 32
 const CANVAS_WIDTH = DISPLAY_WIDTH * 8
 const CANVAS_HEIGHT = DISPLAY_HEIGHT * 8
 
-func CreateWindow() {
+func CreateWindow() *pixelgl.Window {
 	//Initalize a matrix representing the display
 	Display = make([][]bool, DISPLAY_HEIGHT)
 	for i := range Display {
@@ -34,18 +32,13 @@ func CreateWindow() {
 		Bounds: pixel.R(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT),
 		VSync:  true,
 	}
-	var err error
-	win, err = pixelgl.NewWindow(cfg)
+	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
 	}
 
 	imd = imdraw.New(nil)
-	for !win.Closed() {
-		Render()
-	}
-
-	Ready = true
+	return win
 }
 
 //From topleft
@@ -57,7 +50,7 @@ func push_square(imdraw *imdraw.IMDraw, x, y, width float64) {
 	imdraw.Polygon(0)
 }
 
-func Render() {
+func Render(win *pixelgl.Window) {
 	for i := range Display {
 		for k := range Display[i] {
 			if Display[i][k] {

@@ -50,12 +50,27 @@ func main() {
 	chipVM.BootstrapProgram(opcodes)
 
 	//If the debugger is used then give the debugger UI the main thread and start the program on a seperate thread
-	pixelgl.Run(display.CreateWindow)
-	if DEBUG {
-		go chipVM.BeginExecutionLoop(&pause, &play, &step)
-		debugger.StartDebugger(chipVM, &DEBUG_PAUSE, &pause, &play, &step)
-		//Start the debugger paused?
-	} else {
-		chipVM.BeginExecutionLoop(&pause, &play, &step)
-	}
+	pixelgl.Run(
+		func() {
+			var debug_window *pixelgl.Window
+			main_window := display.CreateWindow()
+			if DEBUG {
+				debug_window = debugger.CreateWindow()
+			}
+			//Render loop
+			for !main_window.Closed() {
+				chipVM.ExecuteStep()
+				display.Render(main_window)
+				if DEBUG {
+					debugger.Render(debug_window, chipVM)
+				}
+			}
+		},
+	)
+	//go chipVM.BeginExecutionLoop(&pause, &play, &step)
+	//debugger.StartDebugger(chipVM, &DEBUG_PAUSE, &pause, &play, &step)
+	//Start the debugger paused?
+	//else {
+	//	chipVM.BeginExecutionLoop(&pause, &play, &step)
+	//}
 }

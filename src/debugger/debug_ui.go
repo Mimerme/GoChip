@@ -3,6 +3,62 @@ package debugger
 import "github.com/marcusolsson/tui-go"
 import "fmt"
 import "../chip8/"
+import (
+	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/colornames"
+)
+import "golang.org/x/image/font/basicfont"
+
+var current_pane = 1
+var basicAtlas *text.Atlas
+var basicTxt *text.Text
+var basicTxt2 *text.Text
+var footer *text.Text
+
+const WIDTH = 700
+const HEIGHT = 400
+
+func CreateWindow() *pixelgl.Window {
+	cfg := pixelgl.WindowConfig{
+		Title:  "GoChip Debugger",
+		Bounds: pixel.R(0, 0, WIDTH, HEIGHT),
+		VSync:  true,
+	}
+	win, err := pixelgl.NewWindow(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	//Initalize the text rendering requirenments
+	basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	basicTxt = text.New(pixel.V(0, HEIGHT-10), basicAtlas)
+
+	basicTxt2 = text.New(pixel.V(150, HEIGHT-10), basicAtlas)
+
+	footer = text.New(pixel.V(0, 10), basicAtlas)
+	fmt.Fprintln(footer, "<Tab> to cycle through pannels. <P> to pause execution. <D> to step")
+	return win
+}
+
+func Render(win *pixelgl.Window, machine *chip8.Chip8) {
+	win.Clear(colornames.Black)
+
+	switch current_pane {
+	case 1:
+		basicTxt.Clear()
+		basicTxt2.Clear()
+		draw_registers_gl(basicTxt, machine.GPR, machine.SP, machine.PC, machine.I)
+		draw_stack_gl(basicTxt2, machine.Stack)
+		break
+	}
+
+	basicTxt.Draw(win, pixel.IM)
+	basicTxt2.Draw(win, pixel.IM)
+	footer.Draw(win, pixel.IM)
+	win.Update()
+}
 
 func StartDebugger(chip8VM *(chip8.Chip8), DEBUG_PAUSE *bool, pause *chan struct{}, play *chan struct{}, step *chan struct{}) {
 	fmt.Println("Starting the debugger")
