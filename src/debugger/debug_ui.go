@@ -1,5 +1,7 @@
 package debugger
 
+import "golang.org/x/image/font/basicfont"
+
 import "github.com/marcusolsson/tui-go"
 import "fmt"
 import "../chip8/"
@@ -9,7 +11,12 @@ import (
 	"github.com/faiface/pixel/text"
 	"golang.org/x/image/colornames"
 )
-import "golang.org/x/image/font/basicfont"
+import (
+	"golang.org/x/image/font"
+	"io/ioutil"
+	"os"
+)
+import "github.com/golang/freetype/truetype"
 
 var current_pane = 1
 var basicAtlas *text.Atlas
@@ -19,6 +26,29 @@ var footer *text.Text
 
 const WIDTH = 700
 const HEIGHT = 400
+
+func loadTTF(path string, size float64) (font.Face, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	font, err := truetype.Parse(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return truetype.NewFace(font, &truetype.Options{
+		Size:              size,
+		GlyphCacheEntries: 1,
+	}), nil
+}
 
 func CreateWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
@@ -31,10 +61,15 @@ func CreateWindow() *pixelgl.Window {
 		panic(err)
 	}
 
-	//Initalize the text rendering requirenments
-	basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
-	basicTxt = text.New(pixel.V(0, HEIGHT-10), basicAtlas)
+	//	face, err := loadTTF("intuitive.ttf", 52)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//
 
+	//Initalize the text rendering requirenments
+	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	basicTxt = text.New(pixel.V(0, HEIGHT-10), basicAtlas)
 	basicTxt2 = text.New(pixel.V(150, HEIGHT-10), basicAtlas)
 
 	footer = text.New(pixel.V(0, 10), basicAtlas)
@@ -53,7 +88,6 @@ func Render(win *pixelgl.Window, machine *chip8.Chip8) {
 		draw_stack_gl(basicTxt2, machine.Stack)
 		break
 	}
-
 	basicTxt.Draw(win, pixel.IM)
 	basicTxt2.Draw(win, pixel.IM)
 	footer.Draw(win, pixel.IM)
