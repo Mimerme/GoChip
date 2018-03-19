@@ -43,6 +43,7 @@ func draw_registers(draw_pane *tui.Box, GPRs *[16]byte, I *uint16, PC *uint16, S
 		//TODO: Implement reading the stack
 		grid.SetCell(image.Point{X: 1, Y: i}, tui.NewLabel(fmt.Sprintf(to_hex_string_8(GPRs[i]))))
 	}
+	fmt.Println(PC)
 	pc_label := tui.NewLabel("NoInit")
 	i_label := tui.NewLabel("NoInit")
 	sp_label := tui.NewLabel("NoInit")

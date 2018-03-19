@@ -1,6 +1,7 @@
 package chip8
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -13,7 +14,6 @@ func (machine *Chip8) display_clear() {
 
 //Pop a return value off the stack and set the program counter to it
 func (machine *Chip8) sub_ret() {
-	//fmt.Println("Return")
 	machine.SP = machine.SP - 1
 
 	//Check to see if the SP wraps
@@ -31,7 +31,6 @@ func (machine *Chip8) jump(address uint16) {
 }
 
 func (machine *Chip8) call(address uint16) {
-	//fmt.Println("Call")
 	machine.Stack[machine.SP] = machine.PC
 
 	machine.SP = machine.SP + 1
@@ -63,7 +62,7 @@ func (machine *Chip8) skip_if_not_equal_reg(r1, r2 byte) {
 }
 
 func (machine *Chip8) placeholder() {
-	//fmt.Println("This is a placeholder instruction")
+	fmt.Println("This is a placeholder instruction")
 }
 
 func (machine *Chip8) BeginExecutionLoop(pause *chan struct{}, play *chan struct{}, step *chan struct{}) {
