@@ -50,6 +50,18 @@ func (machine *Chip8) skip_if_not_equal(register uint8, value uint8) {
 	}
 }
 
+func (machine *Chip8) skip_if_equal_reg(r1, r2 byte) {
+	if machine.GPR[r1] == machine.GPR[r2] {
+		machine.PC += 4
+	}
+}
+
+func (machine *Chip8) skip_if_not_equal_reg(r1, r2 byte) {
+	if machine.GPR[r1] != machine.GPR[r2] {
+		machine.PC += 4
+	}
+}
+
 func (machine *Chip8) placeholder() {
 	//fmt.Println("This is a placeholder instruction")
 }
