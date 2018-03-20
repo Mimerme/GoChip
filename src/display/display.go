@@ -2,7 +2,6 @@
 package display
 
 import (
-	"fmt"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
@@ -75,7 +74,6 @@ func ClearScreen() {
 //X and Y are supplied as pixel locations
 //Returns true if the pixel was already enabled
 func Draw(x, y int) bool {
-	fmt.Println(Display)
 	orig := Display[y][x]
 	Display[y][x] = true
 	return orig

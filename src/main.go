@@ -49,6 +49,10 @@ func main() {
 	//Loads program into memory
 	chipVM.BootstrapProgram(opcodes)
 
+	//No need for channels since we're on the main thread
+	var paused bool = false
+	var execute_next bool = false
+
 	//If the debugger is used then give the debugger UI the main thread and start the program on a seperate thread
 	pixelgl.Run(
 		func() {
@@ -59,10 +63,17 @@ func main() {
 			}
 			//Render loop
 			for !main_window.Closed() {
-				chipVM.ExecuteStep()
+				if !paused {
+					chipVM.ExecuteStep()
+				} else {
+					if execute_next {
+						chipVM.ExecuteStep()
+						execute_next = false
+					}
+				}
 				display.Render(main_window)
 				if DEBUG {
-					debugger.Render(debug_window, chipVM)
+					debugger.Render(debug_window, chipVM, &paused, &execute_next)
 				}
 			}
 		},

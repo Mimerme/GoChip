@@ -1,9 +1,41 @@
 package chip8
 
 import (
+	"../display"
 	"fmt"
+	"math/rand"
 	"os"
 )
+
+func (machine *Chip8) generate_random(KK, x byte) {
+	val := (byte)(rand.Intn(255))
+	machine.GPR[x] = val & KK
+}
+
+func (machine *Chip8) draw_sprite(length, pos_x, pos_y byte) {
+	fmt.Println("a")
+	snap := machine.Memory[machine.I:(machine.I + (uint16)(length))]
+	for _, elem := range snap {
+
+		//Generate masks each with an offset of 1 more than the previous until 0b10000000
+		for i := 0; i < 8; i++ {
+			var mask byte = 1
+
+			var k int
+			for k = 0; k < i; k++ {
+				mask = mask << 1
+			}
+
+			//If a bit exists in a memory byte draw it
+			if (elem & mask) == mask {
+				//Returns true if it collides with another pixel
+				fmt.Println("a")
+				display.Draw((int)(pos_x)+7-k, (int)(pos_y+(length-1)))
+			}
+		}
+	}
+	machine.PC += 2
+}
 
 //Stack grows down?
 

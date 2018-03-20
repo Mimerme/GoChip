@@ -48,8 +48,11 @@ func parse_opcode(high byte, low byte, machine *Chip8) {
 		machine.PC += (uint16)(machine.GPR[0])
 	} else if nib_1 == 0xC {
 		//TODO: Generate random
+		machine.generate_random((nib_3<<4)|nib_4, nib_2)
+		machine.PC += 2
 	} else if nib_1 == 0xD {
 		//TODO: Draw sprite
+		machine.draw_sprite(nib_4, nib_2, nib_3)
 	} else if nib_1 == 0xE && nib_3 == 0x9 && nib_4 == 0xE {
 		//TODO: Skip if key
 	} else if nib_1 == 0xE && nib_3 == 0xA && nib_4 == 0x1 {

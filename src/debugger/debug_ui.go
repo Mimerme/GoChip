@@ -77,8 +77,26 @@ func CreateWindow() *pixelgl.Window {
 	return win
 }
 
-func Render(win *pixelgl.Window, machine *chip8.Chip8) {
+func Render(win *pixelgl.Window, machine *chip8.Chip8, paused, execute_next *bool) {
 	win.Clear(colornames.Black)
+
+	if win.JustPressed(pixelgl.KeyP) {
+		fmt.Println("Toggling execution...")
+		(*paused) = !(*paused)
+		footer.Clear()
+		if *paused {
+			fmt.Fprintln(footer, "Execution paused...")
+		} else {
+			fmt.Fprintln(footer, "Execution resumed")
+		}
+	}
+
+	if win.JustPressed(pixelgl.KeyD) && (*paused) {
+		fmt.Println("Executing next instruction")
+		footer.Clear()
+		fmt.Fprintln(footer, "Executed next step")
+		(*execute_next) = true
+	}
 
 	switch current_pane {
 	case 1:

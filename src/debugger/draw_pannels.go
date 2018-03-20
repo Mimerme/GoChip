@@ -21,3 +21,7 @@ func draw_stack_gl(txt *text.Text, stack [16]uint16) {
 		fmt.Fprintln(txt, "Stack[", i, "] |", to_hex_string(element))
 	}
 }
+
+func draw_memory_gl(txt *text.Text, memory [4096]byte) {
+
+}
