@@ -5,6 +5,7 @@ import (
 	"./debugger"
 	"./display"
 	"fmt"
+	"golang.org/x/image/colornames"
 	"os"
 )
 import "github.com/faiface/pixel/pixelgl"
@@ -56,11 +57,15 @@ func main() {
 	//If the debugger is used then give the debugger UI the main thread and start the program on a seperate thread
 	pixelgl.Run(
 		func() {
-			var debug_window *pixelgl.Window
-			main_window := display.CreateWindow()
+			var main_window *pixelgl.Window
+
 			if DEBUG {
-				debug_window = debugger.CreateWindow()
+				display.CreateWindow(500, 0)
+				main_window = debugger.CreateWindow()
+			} else {
+				main_window = display.CreateWindow(0, 0)
 			}
+
 			//Render loop
 			for !main_window.Closed() {
 				if !paused {
@@ -71,9 +76,15 @@ func main() {
 						execute_next = false
 					}
 				}
-				display.Render(main_window)
 				if DEBUG {
-					debugger.Render(debug_window, chipVM, &paused, &execute_next)
+					main_window.Clear(colornames.Black)
+					debugger.Render(main_window, chipVM, &paused, &execute_next)
+					display.Render(main_window)
+					main_window.Update()
+				} else {
+					main_window.Clear(colornames.Black)
+					display.Render(main_window)
+					main_window.Update()
 				}
 			}
 		},

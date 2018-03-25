@@ -5,8 +5,9 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
-	"golang.org/x/image/colornames"
 )
+
+var offset_x, offset_y float64
 
 //Y value first then X
 var Display [][]bool
@@ -19,33 +20,39 @@ const DISPLAY_HEIGHT = 32
 const CANVAS_WIDTH = DISPLAY_WIDTH * 8
 const CANVAS_HEIGHT = DISPLAY_HEIGHT * 8
 
-func CreateWindow() *pixelgl.Window {
-	//Initalize a matrix representing the display
+func CreateWindow(off_x, off_y float64) *pixelgl.Window {
+	offset_x = off_x
+	offset_y = off_y
+	imd = imdraw.New(nil)
 	Display = make([][]bool, DISPLAY_HEIGHT)
 	for i := range Display {
 		Display[i] = make([]bool, DISPLAY_WIDTH)
 	}
 
-	cfg := pixelgl.WindowConfig{
-		Title:  "GoChip [Chip-8 Emulator]",
-		Bounds: pixel.R(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT),
-		VSync:  true,
-	}
-	win, err := pixelgl.NewWindow(cfg)
-	if err != nil {
-		panic(err)
-	}
+	if off_x == 0 && off_y == 0 {
+		//Initalize a matrix representing the display
 
-	imd = imdraw.New(nil)
-	return win
+		cfg := pixelgl.WindowConfig{
+			Title:  "GoChip [Chip-8 Emulator]",
+			Bounds: pixel.R(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT),
+			VSync:  true,
+		}
+		win, err := pixelgl.NewWindow(cfg)
+		if err != nil {
+			panic(err)
+		}
+
+		return win
+	}
+	return nil
 }
 
 //From topleft
 func push_square(imdraw *imdraw.IMDraw, x, y, width float64) {
-	imdraw.Push(pixel.V(x, CANVAS_HEIGHT-y-width))
-	imdraw.Push(pixel.V(x+width, CANVAS_HEIGHT-y-width))
-	imdraw.Push(pixel.V(x+width, CANVAS_HEIGHT-y))
-	imdraw.Push(pixel.V(x, CANVAS_HEIGHT-y))
+	imdraw.Push(pixel.V(offset_x+x, offset_y+CANVAS_HEIGHT-y-width))
+	imdraw.Push(pixel.V(offset_x+x+width, offset_y+CANVAS_HEIGHT-y-width))
+	imdraw.Push(pixel.V(offset_x+x+width, offset_y+CANVAS_HEIGHT-y))
+	imdraw.Push(pixel.V(offset_x+x, offset_y+CANVAS_HEIGHT-y))
 	imdraw.Polygon(0)
 }
 
@@ -57,9 +64,7 @@ func Render(win *pixelgl.Window) {
 			}
 		}
 	}
-	win.Clear(colornames.Black)
 	imd.Draw(win)
-	win.Update()
 }
 
 //Set every bit to false

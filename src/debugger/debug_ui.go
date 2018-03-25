@@ -9,7 +9,6 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
-	"golang.org/x/image/colornames"
 )
 import (
 	"golang.org/x/image/font"
@@ -24,7 +23,7 @@ var basicTxt *text.Text
 var basicTxt2 *text.Text
 var footer *text.Text
 
-const WIDTH = 700
+const WIDTH = 700 + 64
 const HEIGHT = 400
 
 func loadTTF(path string, size float64) (font.Face, error) {
@@ -78,7 +77,6 @@ func CreateWindow() *pixelgl.Window {
 }
 
 func Render(win *pixelgl.Window, machine *chip8.Chip8, paused, execute_next *bool) {
-	win.Clear(colornames.Black)
 
 	if win.JustPressed(pixelgl.KeyP) {
 		fmt.Println("Toggling execution...")
@@ -109,7 +107,6 @@ func Render(win *pixelgl.Window, machine *chip8.Chip8, paused, execute_next *boo
 	basicTxt.Draw(win, pixel.IM)
 	basicTxt2.Draw(win, pixel.IM)
 	footer.Draw(win, pixel.IM)
-	win.Update()
 }
 
 func StartDebugger(chip8VM *(chip8.Chip8), DEBUG_PAUSE *bool, pause *chan struct{}, play *chan struct{}, step *chan struct{}) {
