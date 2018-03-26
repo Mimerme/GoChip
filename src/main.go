@@ -3,7 +3,8 @@ package main
 import (
 	"./chip8"
 	"./debugger"
-	"./display"
+	"./io/display"
+	"./io/keyboard"
 	"fmt"
 	"golang.org/x/image/colornames"
 	"os"
@@ -65,6 +66,15 @@ func main() {
 			} else {
 				main_window = display.CreateWindow(0, 0)
 			}
+
+			//Initalize the pointers to the VM & Window struct
+			keyboard.Initialize(main_window)
+
+			//Start the timers on seperate threads
+			//TODO: Implement pausing on these threads
+			//and/or implement these on the main thread
+			go chip8.StartDelayTimer(chipVM)
+			go chip8.StartSoundTimer(chipVM)
 
 			//Render loop
 			for !main_window.Closed() {

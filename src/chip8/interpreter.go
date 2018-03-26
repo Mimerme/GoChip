@@ -38,6 +38,20 @@ func parse_opcode(high byte, low byte, machine *Chip8) {
 		machine.skip_if_not_equal(nib_2, ((nib_3 << 4) | nib_4))
 	} else if nib_1 == 0x5 && nib_4 == 0x0 {
 		machine.skip_if_equal_reg(nib_2, nib_3)
+	} else if nib_1 == 0x6 {
+		machine.GPR[nib_2] = (nib_3 << 4) | nib_4
+		machine.PC += 2
+	} else if nib_1 == 0x7 {
+		machine.GPR[nib_2] = machine.GPR[nib_2] + ((nib_3 << 4) | nib_4)
+		machine.PC += 2
+	} else if nib_1 == 0x8 {
+		if nib_4 == 0x1 {
+			machine.GPR[nib_2] = (machine.GPR[nib_3]) | machine.GPR[nib_2]
+			machine.PC += 2
+		} else if nib_4 == 0x2 {
+			machine.GPR[nib_2] = (machine.GPR[nib_3]) & machine.GPR[nib_2]
+			machine.PC += 2
+		}
 	} else if nib_1 == 0x9 && nib_4 == 0x0 {
 		machine.skip_if_not_equal_reg(nib_2, nib_3)
 	} else if nib_1 == 0xA {
@@ -53,26 +67,43 @@ func parse_opcode(high byte, low byte, machine *Chip8) {
 	} else if nib_1 == 0xD {
 		//TODO: Draw sprite
 		machine.draw_sprite(nib_4, nib_2, nib_3)
+		machine.PC += 2
 	} else if nib_1 == 0xE && nib_3 == 0x9 && nib_4 == 0xE {
 		//TODO: Skip if key
+		machine.PC += 2
+		if machine.Keys[nib_2] == 1 {
+			machine.PC += 2
+		}
 	} else if nib_1 == 0xE && nib_3 == 0xA && nib_4 == 0x1 {
 		//TODO: skip if not key
+		machine.PC += 2
+		if machine.Keys[nib_2] != 1 {
+			machine.PC += 2
+		}
 	} else if nib_1 == 0xF {
 		if nib_3 == 0x0 && nib_4 == 0x7 {
 			//TODO: Set register to delay timer
+			machine.GPR[nib_2] = machine.DT
+			machine.PC += 2
 		} else if nib_3 == 0x0 && nib_4 == 0xA {
 			//TODO: block and wait for key press
 		} else if nib_3 == 0x1 && nib_4 == 0x5 {
 			//TODO: delay timer to reg
+			machine.DT = machine.GPR[nib_2]
+			machine.PC += 2
 		} else if nib_3 == 0x1 && nib_4 == 0x8 {
 			//TODO: sound timer set
+			machine.ST = machine.GPR[nib_2]
+			machine.PC += 2
 		} else if nib_3 == 0x1 && nib_4 == 0xE {
+			//machine.I += machine.GPR[nib_2]
 		} else if nib_3 == 0x2 && nib_4 == 0x9 {
 		} else if nib_3 == 0x3 && nib_4 == 0x3 {
+
 		} else if nib_3 == 0x5 && nib_4 == 0x5 {
 		} else if nib_3 == 0x6 && nib_4 == 0x5 {
 		}
 	} else {
-		fmt.Printf("Unknown opcode 0x" + string(nib_1) + string(nib_2) + string(nib_3) + string(nib_4))
+		fmt.Printf("Unknown opcode 0x", string(nib_1), string(nib_2), string(nib_3), string(nib_4))
 	}
 }

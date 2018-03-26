@@ -1,7 +1,8 @@
 package chip8
 
 import (
-	"../display"
+	"../io/display"
+	"../io/keyboard"
 	"fmt"
 	"math/rand"
 	"os"
@@ -26,14 +27,13 @@ func (machine *Chip8) draw_sprite(length, pos_x, pos_y byte) {
 			}
 		}
 	}
-	machine.PC += 2
 }
 
 //Stack grows down?
 
 func (machine *Chip8) display_clear() {
 	//fmt.Println("This should clear the display")
-	machine.placeholder()
+	display.ClearScreen()
 }
 
 //Pop a return value off the stack and set the program counter to it
@@ -115,5 +115,9 @@ func (machine *Chip8) ExecuteStep() {
 	//ie. A return instruction changes the PC, but updating the PC after it offsets the PC incorrectly by 2
 	//TODO: Refine the PC handling
 	//TODO: Plz help idk what the cpu instruction cycle is
+
+	//Poll from the keyboard
+	keyboard.Check_Keys(&(machine.Keys))
+
 	parse_opcode(machine.Memory[machine.PC], machine.Memory[machine.PC+1], machine)
 }

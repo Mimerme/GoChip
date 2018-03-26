@@ -1,5 +1,7 @@
 package chip8
 
+import "time"
+
 func InitializeVM() *Chip8 {
 	machine := Chip8{}
 	return &machine
@@ -25,4 +27,31 @@ type Chip8 struct {
 	//The stack has a max depth of 16
 	SP    byte
 	Stack [16]uint16
+
+	Keys [16]byte
+
+	//Delay timer
+	DT byte
+	//Sound timer
+	ST byte
+}
+
+func StartDelayTimer(machine *Chip8) {
+	for {
+		if machine.DT != 0 {
+			machine.DT -= 1
+		}
+		//Should be 16.6 for 60Hz, but time.Sleep requires integers
+		time.Sleep((17) * time.Millisecond)
+	}
+}
+
+func StartSoundTimer(machine *Chip8) {
+	for {
+		if machine.ST != 0 {
+			machine.ST -= 1
+		}
+		//Should be 16.6 for 60Hz, but time.Sleep requires integers
+		time.Sleep((17) * time.Millisecond)
+	}
 }
