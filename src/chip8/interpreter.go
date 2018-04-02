@@ -39,15 +39,11 @@ func parse_opcode(high byte, low byte, machine *Chip8) {
 	} else if nib_1 == 0x5 && nib_4 == 0x0 {
 		machine.skip_if_equal_reg(nib_2, nib_3)
 	} else if nib_1 == 0x6 {
-		machine.GPR[nib_2] = (nib_3 << 4) | nib_4
-		machine.PC += 2
+		machine.LD_C()
 	} else if nib_1 == 0x7 {
-		machine.GPR[nib_2] = machine.GPR[nib_2] + ((nib_3 << 4) | nib_4)
-		machine.PC += 2
+		machine.ADD_C()
 	} else if nib_1 == 0x8 {
 		if nib_4 == 0x1 {
-			machine.GPR[nib_2] = (machine.GPR[nib_3]) | machine.GPR[nib_2]
-			machine.PC += 2
 		} else if nib_4 == 0x2 {
 			machine.GPR[nib_2] = (machine.GPR[nib_3]) & machine.GPR[nib_2]
 			machine.PC += 2
