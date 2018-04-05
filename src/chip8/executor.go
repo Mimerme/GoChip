@@ -70,14 +70,6 @@ func (machine *Chip8) SE_REG(r1, r2 byte) {
 	}
 }
 
-//9xy0
-func (machine *Chip8) SNE_REG(r1, r2 byte) {
-	machine.PC += 2
-	if machine.GPR[r1] != machine.GPR[r2] {
-		machine.PC += 2
-	}
-}
-
 //6xkk
 func (machine *Chip8) LD(nib_2, nib_3, nib_4 byte) {
 	machine.GPR[nib_2] = (nib_3 << 4) | nib_4
@@ -103,7 +95,7 @@ func (machine *Chip8) OR(nib_2, nib_3 byte) {
 }
 
 //8xy2
-func (machine *Chip8) OR(nib_2, nib_3 byte) {
+func (machine *Chip8) AND(nib_2, nib_3 byte) {
 	machine.GPR[nib_2] = (machine.GPR[nib_3]) & machine.GPR[nib_2]
 	machine.PC += 2
 }
@@ -115,9 +107,9 @@ func (machine *Chip8) XOR(nib_2, nib_3 byte) {
 }
 
 //8xy4
-func (machine *Chip8) ADD(nib_2, nib_3 byte) {
-	var left int64 = machine.GPR[nib_2]
-	var right int64 = machine.GPR[nib_3]
+func (machine *Chip8) ADD_REG(nib_2, nib_3 byte) {
+	var left uint64 = (uint64)(machine.GPR[nib_2])
+	var right uint64 = (uint64)(machine.GPR[nib_3])
 	if left+right > 0xFF {
 		machine.GPR[0xF] = 1
 	}
@@ -182,20 +174,6 @@ func (machine *Chip8) SHL(nib_2, nib_3 byte) {
 	machine.PC += 2
 }
 
-//8xyE
-func (machine *Chip8) SHL(nib_2, nib_3 byte) {
-
-	//Apply a mask to get the least sig bit
-	if (machine.GPR[nib_2] & 0x01) == 0x01 {
-		machine.GPR[0xF] = 1
-	} else {
-		machine.GPR[0xF] = 0
-	}
-	//Divide by 2
-	machine.GPR[nib_2] = machine.GPR[nib_2] << 1
-	machine.PC += 2
-}
-
 //9xy0
 func (machine *Chip8) SNE_REG(nib_2, nib_3 byte) {
 	machine.PC += 2
@@ -205,13 +183,13 @@ func (machine *Chip8) SNE_REG(nib_2, nib_3 byte) {
 }
 
 //Annn
-func (machine *Chip8) LD_I(nib_2, nib_3 byte) {
+func (machine *Chip8) LD_I(nib_2, nib_3, nib_4 byte) {
 	machine.I = ((uint16)(nib_2) << 8) | ((uint16)(nib_3) << 4) | (uint16)(nib_4)
 	machine.PC += 2
 }
 
 //Bnnn
-func (machine *Chip8) JP_V0(nib_2, nib_3 byte) {
+func (machine *Chip8) JP_V0(nib_2, nib_3, nib_4 byte) {
 	machine.PC = ((uint16)(nib_2) << 8) | ((uint16)(nib_3) << 4) | (uint16)(nib_4)
 	machine.PC += (uint16)(machine.GPR[0])
 }
@@ -225,7 +203,11 @@ func (machine *Chip8) RND(KK, x byte) {
 
 //Dxyn
 func (machine *Chip8) DRW(length, pos_x, pos_y byte) {
-	snap := machine.Memory[machine.I:(machine.I + (uint16)(length))]
+	if length > 15 {
+		fmt.Println("Length of sprite is too long")
+	}
+
+	snap := machine.Memory[machine.I:(machine.I + (uint16)(length-1))]
 	for y_index, elem := range snap {
 		//Generate masks each with an offset of 1 more than the previous until 0b10000000
 		for index, mask := range masks {
@@ -242,7 +224,7 @@ func (machine *Chip8) DRW(length, pos_x, pos_y byte) {
 //Ex9E
 func (machine *Chip8) SKP(nib_2 byte) {
 	machine.PC += 2
-	if machine.Keys[nib_2] {
+	if machine.Keys[nib_2] == 1 {
 		machine.PC += 2
 	}
 }
@@ -250,7 +232,7 @@ func (machine *Chip8) SKP(nib_2 byte) {
 //ExA1
 func (machine *Chip8) SKNP(nib_2 byte) {
 	machine.PC += 2
-	if !machine.Keys[nib_2] {
+	if machine.Keys[nib_2] == 0 {
 		machine.PC += 2
 	}
 }
@@ -263,9 +245,17 @@ func (machine *Chip8) STR_DT(nib_2 byte) {
 }
 
 //Fx0A
-//TODO: Blocks execution until a key is pressed
 func (machine *Chip8) BLOCK_KEY(nib_2 byte) {
-	placeholder()
+WaitKey:
+	for {
+		keyboard.Check_Keys(&(machine.Keys))
+		for _, element := range machine.Keys {
+			if element == 1 {
+				break WaitKey
+			}
+		}
+	}
+
 	machine.PC += 2
 }
 
@@ -290,9 +280,41 @@ func (machine *Chip8) ADD_I(nib_2 byte) {
 }
 
 //Fx29
+func (machine *Chip8) LD_TXT_SPRITE(nib_2 byte) {
+	machine.I = (uint16)(nib_2) * 0x5
+	machine.PC += 2
+}
+
 //Fx33
+func (machine *Chip8) STR_BCD(nib_2 byte) {
+	var value byte = machine.GPR[nib_2]
+
+	//Store hundreds digit
+	machine.Memory[machine.I] = (byte)((((uint64)(value)) % 1000) / 100)
+	//Store tens digit
+	machine.Memory[machine.I+1] = (byte)((((uint64)(value)) % 100) / 10)
+	//Store ones digit
+	machine.Memory[machine.I+2] = (byte)((((uint64)(value)) % 10))
+	machine.PC += 2
+}
+
 //Fx55
+func (machine *Chip8) STR_MULTI(nib_2 byte) {
+	var i byte
+	for i = 0; i < nib_2; i++ {
+		machine.Memory[machine.I+(uint16)(i)] = machine.GPR[i]
+	}
+	machine.PC += 2
+}
+
 //Fx65
+func (machine *Chip8) LD_MULTI(nib_2 byte) {
+	var i byte
+	for i = 0; i < nib_2; i++ {
+		machine.GPR[i] = machine.Memory[machine.I+(uint16)(i)]
+	}
+	machine.PC += 2
+}
 
 func (machine *Chip8) placeholder() {
 	fmt.Println("This is a placeholder instruction")
