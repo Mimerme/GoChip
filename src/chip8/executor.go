@@ -207,7 +207,7 @@ func (machine *Chip8) DRW(length, pos_x, pos_y byte) {
 		fmt.Println("Length of sprite is too long")
 	}
 
-	snap := machine.Memory[machine.I:(machine.I + (uint16)(length-1))]
+	snap := machine.Memory[machine.I:(machine.I + (uint16)(length))]
 	for y_index, elem := range snap {
 		//Generate masks each with an offset of 1 more than the previous until 0b10000000
 		for index, mask := range masks {

@@ -80,7 +80,7 @@ func parse_opcode(high byte, low byte, machine *Chip8) {
 	case 0xC:
 		machine.RND((nib_3<<4)|(nib_4), nib_2)
 	case 0xD:
-		machine.DRW(nib_4, nib_2, nib_3)
+		machine.DRW(nib_4, machine.GPR[nib_2], machine.GPR[nib_3])
 	case 0xE:
 		if nib_3 == 0x9 && nib_4 == 0xE {
 			machine.SKP(nib_2)
